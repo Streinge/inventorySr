@@ -18,7 +18,7 @@ class ApiConfig
         $this->apiPassword = $apiPassword;
     }
 
-    public function getApiPassword(): int
+    public function getApiPassword(): string
     {
         return $this->apiPassword;
     }

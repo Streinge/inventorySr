@@ -12,24 +12,17 @@ class Config
 
     public function __construct(CompanyConfig $companyConfig, ApiConfig $apiConfig)
     {
-
         $this->companyConfig = $companyConfig;
-        $this->companyToken = $configData['companyToken'] ?? '';
-        $this->generalPassword = $configData['generalPassword'] ?? '';
-
-        if (empty($this->companyId) || empty($this->companyToken) || empty($this->generalPassword)) {
-            throw new ConfigException("Invalid config data", 500);
-        }
-        
+        $this->apiConfig = $apiConfig;
     }
 
-    public function getCompanyId(): string
+    public function getCompanyConfig(): CompanyConfig
     {
-        return $this->companyId;
+        return $this->companyConfig;
     }
-    public function getCompanyToken(): string
+    public function getApiConfig(): ApiConfig
     {
-        return $this->companyToken;
+        return $this->apiConfig;
     }
   
 }
