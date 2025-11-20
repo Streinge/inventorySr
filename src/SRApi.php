@@ -1,7 +1,11 @@
 <?php
 
 namespace src;
-class SRApi
+
+use src\Config;
+use src\Exceptions\HttpException;
+
+class SrApi
 {
     const API_BASE_URL = 'https://de.backend.salesrender.com/companies/';
     const API_USER_SCOPE = '/CRM/user';
@@ -11,12 +15,26 @@ class SRApi
     private $companyId;
     private $scope;
 
-    public function __construct($companyId, $token, $scope = self::API_CRM_SCOPE)
+    public function __construct(Config $config, $scope = self::API_CRM_SCOPE)
     {
-        $this->companyId = $companyId;
-        $this->token = $token;
+        $configFilename = Config::CONFIG_FILE_NAME;
+
+        $this->companyId = $config->getCompanyId();
+
+        if (empty($this->companyId)) {
+            throw new HttpException("Company ID is not defined in $configFilename", 500);
+        }
+
+        $this->token = $config->getCompanyToken();
+
+        if (empty($this->token)) {
+            throw new HttpException("Company Token is not defined in $configFilename", 500);
+        }
+
         $this->scope = $scope;
     }
+
+
 
     public function sendRequest($query, ?array $vars = null)
     {

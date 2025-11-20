@@ -11,6 +11,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../autoload.php';
 
 use Exception;
+use src\Exceptions\HttpException;
 
 class Webhook
 
@@ -22,8 +23,11 @@ class Webhook
 
     public function __construct(string $json)
     {
+        if (empty($json)) {
+            throw new HttpException("Empty incoming JSON", 500);
+        }
+        
         $this->incomingJson = $json;
-
     }
 
     
