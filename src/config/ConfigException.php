@@ -1,26 +1,12 @@
 <?php 
 
+declare(strict_types=1);
+
 namespace src\config;
 
-require_once __DIR__ . '/../autoload.php';
+use RuntimeException;
 
-use Exception;
-use Throwable;
-
-class ConfigException extends Exception
+class ConfigException extends RuntimeException
 {
-    protected int $httpCode;
-    
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-        $this->httpCode = $code;
-    }
-
-    public function getHttpCode()
-    {
-        return $this->httpCode;
-    }
-
 
 }
