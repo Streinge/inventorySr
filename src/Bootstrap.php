@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src;
 
 use src\config\ConfigLoader;
@@ -30,17 +32,4 @@ try {
     FileLogger::writeGetStockLog($e->getMessage(), true);
     http_response_code($e->getHttpCode());
     exit();
-}
-
-try {
-    $srApi = new SrApi($config);
-} catch (HttpException $e) {
-    FileLogger::writeGetStockLog($e->getMessage(), true);
-    http_response_code($e->getHttpCode());
-}
-
-
-
-FileLogger::writeGetStockLog("Test");
-    }
 }
