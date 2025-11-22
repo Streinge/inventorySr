@@ -10,6 +10,5 @@ use src\Bootstrap;
 
 require_once __DIR__ . '/../../../autoload.php';
 
-$bootstrap = new Bootstrap();
+$bootstrap = new Bootstrap(__DIR__);
 $bootstrap->handle();
-

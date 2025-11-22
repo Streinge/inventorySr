@@ -4,32 +4,38 @@ declare(strict_types=1);
 
 namespace src;
 
+use src\ApiActionTypes\ApiActionTypes;
+use src\apiActionTypes\ApiActionTypesException;
 use src\config\ConfigLoader;
 use src\config\ConfigException;
 
-use src\Exceptions\HttpException;
-use src\FileLogger;
-use src\SrApi;
+use src\env\EnvException;
+use src\env\EnvLoader;
+
 
 final class Bootstrap
+
 {
-    public static function handle(): void
+
+    public string $indexPath;
+    public function __construct(string $indexPath)
     {
+        $this->indexPath = $indexPath;
+    }
+    public function handle(): void
+    {
+        $action = '';
         try {
+            $env = (new EnvLoader())->loadsFromPhpFile();
+            $action = (new ApiActionTypes($this->indexPath))->getApiAction();
             $config = (new ConfigLoader())->loadsFromPhpFile();
-        } catch (ConfigException $e) {
-            FileLogger($e->getMessage(), true);
-            http_response_code($e->getHttpCode());
-            exit();
+
+
+        } catch (ConfigException|EnvException|ApiActionTypesException $e) {
+            (new ExceptionHandler($e))->handleException($action, $env);
         }
 
     }
-}
 
-try {
-    $config = new Config();
-} catch (HttpException $e) {
-    FileLogger::writeGetStockLog($e->getMessage(), true);
-    http_response_code($e->getHttpCode());
-    exit();
+
 }

@@ -7,10 +7,10 @@ use InvalidArgumentException;
 class Config
 {
 
-    private CompanyConfig $companyConfig;
+    private CompanyCredentials $companyConfig;
     private ApiConfig $apiConfig;
 
-    public function __construct(CompanyConfig $companyConfig, ApiConfig $apiConfig)
+    public function __construct(CompanyCredentials $companyConfig, ApiConfig $apiConfig)
     {
         $this->companyConfig = $companyConfig;
         $this->apiConfig = $apiConfig;

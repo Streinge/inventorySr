@@ -1,4 +1,4 @@
 /config.php
 /api/logs/*
 /.idea/
-/.env
+/.env.php

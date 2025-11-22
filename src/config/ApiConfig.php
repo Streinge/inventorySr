@@ -12,7 +12,7 @@ class ApiConfig
     {
 
         if (empty($apiPassword)) {
-            throw new InvalidArgumentException('Invalid Api password');
+            throw new ConfigException('Invalid Api password');
         }
 
         $this->apiPassword = $apiPassword;

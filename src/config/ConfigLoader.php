@@ -39,7 +39,17 @@ class ConfigLoader
             throw new ConfigException("Config data don't defined", 500);
         }
 
-        return new Config($configData);
+        $companyId = (int) $configData['wareHouseCompany']['SrCredentials']['companyId'] ?? 0;
+        $companyToken = (string) $configData['wareHouseCompany']['SrCredentials']['companyToken'] ?? '';
+
+        $sRConfigCredentials = new CompanyCredentials($companyId, $companyToken);
+
+        $scriptPassword = (string) $configData['apiScriptData']['scriptPassword'] ?? '';
+
+        $apiScriptConfig = new ApiConfig($scriptPassword);
+
+
+        return new Config($sRConfigCredentials, $apiScriptConfig);
     }
   
 }
