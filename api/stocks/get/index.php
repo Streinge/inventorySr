@@ -6,9 +6,16 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+use src\apiActionTypes\ApiActionTypes;
 use src\Bootstrap;
+use src\config\ConfigLoader;
+use src\env\EnvLoader;
 
 require_once __DIR__ . '/../../../autoload.php';
 
-$bootstrap = new Bootstrap(__DIR__);
+$apiActionTypes = new ApiActionTypes(__DIR__);
+$envLoader = new EnvLoader();
+$configLoader = new ConfigLoader();
+
+$bootstrap = new Bootstrap($apiActionTypes, $envLoader, $configLoader);
 $bootstrap->handle();

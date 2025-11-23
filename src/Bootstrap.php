@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace src;
 
-use src\ApiActionTypes\ApiActionTypes;
+use src\apiActionTypes\ApiActionTypes;
 use src\apiActionTypes\ApiActionTypesException;
 use src\config\ConfigLoader;
 use src\config\ConfigException;
@@ -16,19 +16,29 @@ use src\env\EnvLoader;
 final class Bootstrap
 
 {
-
-    public string $indexPath;
-    public function __construct(string $indexPath)
+    private ApiActionTypes $apiActionTypes;
+    private EnvLoader $envLoader;
+    private ConfigLoader $configLoader;
+    public function __construct(
+        ApiActionTypes $apiActionTypes,
+        EnvLoader $envLoader,
+        ConfigLoader $configLoader
+    )
     {
-        $this->indexPath = $indexPath;
+        $this->apiActionTypes = $apiActionTypes;
+        $this->envLoader = $envLoader;
+        $this->configLoader = $configLoader;
     }
     public function handle(): void
     {
         $action = '';
+        $env = null;
         try {
-            $env = (new EnvLoader())->loadsFromPhpFile();
-            $action = (new ApiActionTypes($this->indexPath))->getApiAction();
-            $config = (new ConfigLoader())->loadsFromPhpFile();
+            $action = $this->apiActionTypes->getApiAction();
+
+            $env = $this->envLoader->loadFromPhpFile();
+
+            $config = $this->configLoader->loadFromPhpFile();
 
 
         } catch (ConfigException|EnvException|ApiActionTypesException $e) {
@@ -36,6 +46,5 @@ final class Bootstrap
         }
 
     }
-
 
 }

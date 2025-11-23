@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 
@@ -11,7 +13,6 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../autoload.php';
 
 use Exception;
-use src\Exceptions\HttpException;
 
 class Webhook
 
@@ -30,7 +31,7 @@ class Webhook
         $this->incomingJson = $json;
     }
 
-    
+    /*
         if (empty($json)) {
             throw new Exception("Empty incoming JSON");
         }
@@ -43,8 +44,9 @@ class Webhook
         $this->config = new Config();
 
         return self::$webhook;
-        
+
     }
+    */
 
     public static function isValid():bool
     {

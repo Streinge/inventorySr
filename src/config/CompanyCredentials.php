@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src\config;
+
+require_once __DIR__ . '/../../autoload.php';
 
 
 class CompanyCredentials

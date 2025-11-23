@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src\config;
 
 use InvalidArgumentException;
@@ -16,7 +18,7 @@ class Config
         $this->apiConfig = $apiConfig;
     }
 
-    public function getCompanyConfig(): CompanyConfig
+    public function getCompanyConfig(): CompanyCredentials
     {
         return $this->companyConfig;
     }

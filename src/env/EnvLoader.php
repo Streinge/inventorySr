@@ -1,29 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src\env;
 
-use src\config\ApiConfig;
-use src\config\CompanyCredentials;
 use src\Path;
-use src\config\ConfigException;
-use src\config\Config;
 
 class EnvLoader
 {
     const ENV_FILE_NAME = ".env.php";
-  
+
     /**
      * Загружает и возвращает данные окружения из файла
      *
-     * @return array
-     * @throws EnvException
+     * @param string|null $envFilePath
+     * @return Env
      */
 
-    public function loadsFromPhpFile(?string $envFilePath = null): Env
+    public function loadFromPhpFile(?string $envFilePath = null): Env
     {
 
         if (!$envFilePath) {
-            $basePath = Path::getProjectRootPath();
+            $basePath = (new Path())->getProjectRootPath();
             $envFilePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::ENV_FILE_NAME;
         }
 
@@ -43,8 +41,9 @@ class EnvLoader
 
         $appEnvType = (string) $envData['appEnv'] ?? '';
         $defaultErrorFilename = (string) $envData['errorFilename'] ?? '';
+        $sRUrlServer = (string) $envData['apiSrServer'][$appEnvType] ?? '';
 
-        return new Env($appEnvType, );
+        return new Env($appEnvType, $defaultErrorFilename, $sRUrlServer);
     }
   
 }

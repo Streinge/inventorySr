@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src\env;
 
 
@@ -15,6 +17,10 @@ class Env
     {
         if (!in_array($appEnvType, self::APP_ENV_TYPES)) {
             throw new EnvException("Invalid value type application environment");
+        }
+
+        if (empty($sRApiUrl)) {
+            throw new EnvException("Invalid URL SalesRender server");
         }
 
         $this->appEnvType = $appEnvType;

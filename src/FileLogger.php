@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace src;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
-use src\Path;
+use src\ApiActionTypes\ApiActionTypes;
+use src\env\Env;
 
 class FileLogger
 {
@@ -14,52 +17,64 @@ class FileLogger
     const LOG_STOCK_GET_FILENAME = "logGetStock";
     const MAX_SIZE_IN_BYTE = 100 * 1024;
     private string $recordableString;
+    private string $apiAction;
     private bool $isScriptFinish;
 
-    public function __construct(string $recordableString, bool $isScriptFinish = false)
+    private string $errorFilePath;
+
+
+    public function __construct(string $recordableString, Env $env, Path $path, string $apiAction,  bool $isScriptFinish = false)
     {
         $this->recordableString = $recordableString;
         $this->isScriptFinish = $isScriptFinish;
+        $this->errorFilePath = (new Path())->getProjectRootPath() . DIRECTORY_SEPARATOR . $env->getDefaultErrorFilename();
+        $this->apiAction = $apiAction;
     }
 
-    public static function writeLog(string $apiAction)
+    public function writeLog(): void
     {
-
+        if ($this->apiAction === ApiActionTypes::GET_STOCKS_ACTION) {
+            $this->writeGetStockLog();
+        } elseif ($this->apiAction === ApiActionTypes::CORRECTION_STOCKS_ACTION) {
+            $this->writeCorrectionStockLog();
+        } else {
+            error_log("Logs do not write because api action has invalid value", 3, $this->errorFilePath);
+        }
     }
 
     private function writeGetStockLog(): void
     {
+        $baseFilePath = rtrim((new Path())->getApiLogsPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_GET_FILENAME;
 
-        $baseFilePath = rtrim(Path::getApiLogsPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_GET_FILENAME;
-
-        var_dump($baseFilePath);
-
-        $i = 0;
-        do {
-            $currentFilePath = $baseFilePath . $i;
-            ++$i;
-        } while (file_exists($currentFilePath) && filesize($currentFilePath) >= self::MAX_SIZE_IN_BYTE);
+        $currentFilePath = $this->getCurrentLogFilePath($baseFilePath);
 
         self::writeLineToFile($currentFilePath, $this->recordableString, $this->isScriptFinish);
 
     }
 
-    private function writeCorrectionStockLog(string $recordableString, bool $isScriptFinish = false): void
+    private function writeCorrectionStockLog(): void
     {
 
-        $baseFilePath = rtrim(Path::getApiLogsPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_CORRECTION_FILENAME;
+        $baseFilePath = rtrim((new Path())->getApiLogsPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_CORRECTION_FILENAME;
 
+        $currentFilePath = $this->getCurrentLogFilePath($baseFilePath);
+
+        $this->writeLineToFile($currentFilePath, $this->recordableString, $this->isScriptFinish);
+
+    }
+
+    private function getCurrentLogFilePath(string $baseFilePath): string
+    {
         $i = 0;
         do {
             $currentFilePath = $baseFilePath . $i;
             ++$i;
         } while (file_exists($currentFilePath) && filesize($currentFilePath) >= self::MAX_SIZE_IN_BYTE);
 
-        self::writeLineToFile($currentFilePath, $this->recordableString, $this->isScriptFinish);
-
+        return $currentFilePath;
     }
 
-    private static function writeLineToFile(string $filename, string $line, bool $isScriptFinish): void
+    private function writeLineToFile(string $filename, string $line, bool $isScriptFinish): void
     {
         $today = date("Y-m-d H:i:s");
         if ($isScriptFinish) {
@@ -73,7 +88,7 @@ class FileLogger
         }
 
         if (!$result) {
-            error_log("Failed to write to log file: $filename", Path::getProjectRootPath());
+            error_log("Failed to write to log file: $filename", 3, $this->errorFilePath);
         }
         
     }

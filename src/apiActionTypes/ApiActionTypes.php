@@ -1,6 +1,8 @@
 <?php
 
-namespace src\ApiActionTypes;
+declare(strict_types=1);
+
+namespace src\apiActionTypes;
 
 use src\Path;
 
@@ -18,12 +20,14 @@ class ApiActionTypes
 
     public function getApiAction(): string
     {
-        $rootPath = Path::getProjectRootPath();
-        $relativeIndexPath = str_replace($rootPath, '',$this->indexPath);
+        $rootPath = (new Path())->getProjectRootPath();
+
+        $relativeIndexPath = rtrim(str_replace($rootPath, '',$this->indexPath), DIRECTORY_SEPARATOR);
+
         $action = '';
-        if ($relativeIndexPath === Path::API_STOCKS_GET_DIRECTORY) {
+        if ($relativeIndexPath === DIRECTORY_SEPARATOR . Path::API_STOCKS_GET_DIRECTORY) {
             $action = self::GET_STOCKS_ACTION;
-        } elseif ($relativeIndexPath === Path::API_STOCKS_CORRECTION_DIRECTORY) {
+        } elseif ($relativeIndexPath === DIRECTORY_SEPARATOR . Path::API_STOCKS_CORRECTION_DIRECTORY) {
             $action = self::CORRECTION_STOCKS_ACTION;
         }
 
