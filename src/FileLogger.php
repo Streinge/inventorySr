@@ -13,7 +13,7 @@ use src\env\Env;
 
 class FileLogger
 {
-    const LOG_STOCK_CORRECTION_FILENAME = "logCorrection";
+    const LOG_STOCK_CORRECTION_FILENAME = "logCorrectionStock";
     const LOG_STOCK_GET_FILENAME = "logGetStock";
     const MAX_SIZE_IN_BYTE = 100 * 1024;
     private string $recordableString;
@@ -21,13 +21,15 @@ class FileLogger
     private bool $isScriptFinish;
 
     private string $errorFilePath;
+    private string $apiLogFilePath;
 
 
     public function __construct(string $recordableString, Env $env, Path $path, string $apiAction,  bool $isScriptFinish = false)
     {
         $this->recordableString = $recordableString;
         $this->isScriptFinish = $isScriptFinish;
-        $this->errorFilePath = (new Path())->getProjectRootPath() . DIRECTORY_SEPARATOR . $env->getDefaultErrorFilename();
+        $this->errorFilePath = $path->getApiLogsPath() . DIRECTORY_SEPARATOR . $env->getDefaultErrorFilename();
+        $this->apiLogFilePath = $path->getApiLogsPath();
         $this->apiAction = $apiAction;
     }
 
@@ -44,7 +46,7 @@ class FileLogger
 
     private function writeGetStockLog(): void
     {
-        $baseFilePath = rtrim((new Path())->getApiLogsPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_GET_FILENAME;
+        $baseFilePath = rtrim($this->apiLogFilePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_GET_FILENAME;
 
         $currentFilePath = $this->getCurrentLogFilePath($baseFilePath);
 
@@ -55,7 +57,7 @@ class FileLogger
     private function writeCorrectionStockLog(): void
     {
 
-        $baseFilePath = rtrim((new Path())->getApiLogsPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_CORRECTION_FILENAME;
+        $baseFilePath = rtrim($this->apiLogFilePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::LOG_STOCK_CORRECTION_FILENAME;
 
         $currentFilePath = $this->getCurrentLogFilePath($baseFilePath);
 

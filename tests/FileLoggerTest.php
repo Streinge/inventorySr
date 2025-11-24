@@ -22,6 +22,8 @@ class FileLoggerTest extends TestCase
     {
         $this->logDir = __DIR__ . DIRECTORY_SEPARATOR . 'test_logs';
 
+        
+
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir, 0777, true);
         }
@@ -42,14 +44,43 @@ class FileLoggerTest extends TestCase
     public function testWriteGetStockLogCreatesFile()
     {
         $message = "Test get stock log message";
-        $logger = new FileLogger($message, $this->mockEnv, ApiActionTypes::GET_STOCKS_ACTION);
+
+
+        
+        $logger = new FileLogger($message, $this->mockEnv, $this->mockPath, ApiActionTypes::GET_STOCKS_ACTION);
         $logger->writeLog();
 
         $files = glob($this->logDir . DIRECTORY_SEPARATOR . FileLogger::LOG_STOCK_GET_FILENAME . '*');
+
         $this->assertNotEmpty($files, "Ожидался лог файл get stock");
 
         $content = file_get_contents($files[0]);
         $this->assertStringContainsString($message, $content);
+    }
+
+    public function testWriteCorrectionStockLogCreatesFile()
+    {
+        $message = "Test correction stock log message";
+        $logger = new FileLogger($message, $this->mockEnv, $this->mockPath, ApiActionTypes::CORRECTION_STOCKS_ACTION);
+        $logger->writeLog();
+
+        $files = glob($this->logDir . DIRECTORY_SEPARATOR . FileLogger::LOG_STOCK_CORRECTION_FILENAME . '*');
+        $this->assertNotEmpty($files, "Ожидался лог файл correction stock");
+
+        $content = file_get_contents($files[0]);
+        $this->assertStringContainsString($message, $content);
+    }
+
+    public function testWriteLogWithInvalidActionLogsError()
+    {
+        $invalidAction = 'invalidActionTest';
+        $logger = new FileLogger("message", $this->mockEnv, $this->mockPath, $invalidAction);
+        $logger->writeLog();
+
+        $files = glob($this->logDir . DIRECTORY_SEPARATOR . $this->mockEnv->getDefaultErrorFilename() . '*');
+        $this->assertNotEmpty($files, "Ожидался лог error.txt");
+        $content = file_get_contents($files[0]);
+        $this->assertStringContainsString("Logs do not write because api action has invalid value", $content);
     }
 
 }

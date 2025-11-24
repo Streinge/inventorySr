@@ -12,42 +12,36 @@ use src\env\EnvException;
 
 class ExceptionHandler
 {
-    public Exception $e;
-    private string $errorFilePath;
-    public function __construct(Exception $e)
-    {
-        $this->e = $e;
-    }
 
-    public function handleException(string $action, Env $env)
+    public function handleException(Exception $e, string $action, Env $env, Path $path): void
     {
-        $this->errorFilePath = (new Path())->getProjectRootPath() . DIRECTORY_SEPARATOR . $env->getDefaultErrorFilename();
-        if ($this->e instanceof ApiActionTypesException) {
-            $this->handleApiActionTypesExceptions();
-        } elseif ($this->e instanceof ConfigException || $this->e instanceof EnvException) {
-            $this->handleEnvOrConfigExceptions($env, $action);
+        $errorFilePath = $path->getProjectRootPath() . DIRECTORY_SEPARATOR . $env->getDefaultErrorFilename();
+
+        if ($e instanceof ApiActionTypesException) {
+            $this->handleApiActionTypesExceptions($e, $errorFilePath);
+        } elseif ($e instanceof ConfigException || $e instanceof EnvException) {
+            $this->handleEnvConfigWebhookExceptions($e, $env, $path, $action);
         } else {
-            $this->handleUnknownExceptions();
+            $this->handleUnknownExceptions($e, $errorFilePath);
         }
 
         exit();
     }
 
-    private function handleApiActionTypesExceptions()
+    private function handleApiActionTypesExceptions(Exception $e, string $errorFilePath): void
     {
-        error_log($this->e->getMessage(), $this->errorFilePath);
+        $this->handleUnknownExceptions($e, $errorFilePath);
+    }
+
+    private function handleEnvConfigWebhookExceptions(Exception $e, Env $env, Path $path, string $action): void
+    {
+        (new FileLogger($e->getMessage(), $env, $path, $action, true))->writeLog();
         http_response_code(500);
     }
 
-    private function handleEnvOrConfigExceptions(Env $env, string $action)
+    private function handleUnknownExceptions(Exception $e, string $errorFilePath): void
     {
-        (new FileLogger($this->e->getMessage(), $env, $action,true))->writeLog();
-        http_response_code(500);
-    }
-
-    private function handleUnknownExceptions()
-    {
-        error_log($this->e->getMessage(), $this->errorFilePath);
+        error_log($e->getMessage(), 3, $errorFilePath);
         http_response_code(500);
     }
 }

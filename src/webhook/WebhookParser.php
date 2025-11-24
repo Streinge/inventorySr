@@ -18,6 +18,11 @@ class WebhookParser
 
     public function __construct(?string $json)
     {
+        
+        if (empty($json)) {
+            throw new Webhook("Empty incoming JSON");
+        }
+        
         if (!$json || empty($json)) {
             throw new InvalidArgumentException("Webhook is NULL or empty");
         }
