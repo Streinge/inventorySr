@@ -2,3 +2,4 @@
 /api/logs/*
 /.idea/
 /.env.php
+/.phpunit.result.cache
