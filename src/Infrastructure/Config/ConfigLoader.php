@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace src\config;
+namespace src\Infrastructure\Config;
 
-use src\Path;
+use src\Infrastructure\Utils\Path;
 
 class ConfigLoader
 {

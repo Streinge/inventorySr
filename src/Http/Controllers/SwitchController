@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
+namespace src\Controllers;
+
+use src\apiActionTypes\ApiActionTypes;
+use src\Controllers\StocksGetController;
+use src\Controllers\StocksCorrectionWebhookController;
+
+class SwitchController
+{
+    private string $apiAction = '';
+
+    public function getController(array $requestData)
+    {
+        $uri = strtok($requestData['REQUEST_URI'], '?');
+        
+        $routes = [
+            'GET:/api/stocks/get' => ['controller' => StocksGetController::class, "action" => ApiActionTypes::GET_STOCKS_ACTION],
+            'POST:/api/stocks/correction' => ['controller' => StocksCorrectionWebhookController::class, "action" => ApiActionTypes::CORRECTION_STOCKS_ACTION],
+        ];
+
+        $uri = strtok($requestData['REQUEST_URI'], '?');
+        $method = $requestData['REQUEST_METHOD'];
+
+        $routeKey = $method . ':' . $uri;
+
+        if (!isset($routes[$routeKey])) {
+            throw new ControllerException('Uknown http route', 404);
+        }
+            $controllerClass = $routes[$routeKey]['controller'];
+            $this->apiAction
+            return  new $controllerClass();
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Not found']);
+        }
+
+    }
+}

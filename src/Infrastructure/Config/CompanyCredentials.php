@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace src\config;
+namespace src\Infrastructure\Config;
 
 require_once __DIR__ . '/../../autoload.php';
 

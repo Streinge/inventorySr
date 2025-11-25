@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace src;
+namespace src\Infrastructure\Logging;
 
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 use src\ApiActionTypes\ApiActionTypes;
-use src\env\Env;
+use src\Infrastructure\Env\Env;
+use src\Infrastructure\Utils\Path;
 
 class FileLogger
 {
@@ -24,7 +25,7 @@ class FileLogger
     private string $apiLogFilePath;
 
 
-    public function __construct(string $recordableString, Env $env, Path $path, string $apiAction,  bool $isScriptFinish = false)
+    public function __construct(string $recordableString, Env $env, Path $path, string $apiAction = '',  bool $isScriptFinish = false)
     {
         $this->recordableString = $recordableString;
         $this->isScriptFinish = $isScriptFinish;
@@ -40,7 +41,8 @@ class FileLogger
         } elseif ($this->apiAction === ApiActionTypes::CORRECTION_STOCKS_ACTION) {
             $this->writeCorrectionStockLog();
         } else {
-            error_log("Logs do not write because api action has invalid value", 3, $this->errorFilePath);
+            $message = "apiAction is Empty or Invalid value" . PHP_EOL . $this->recordableString;
+            $this->writeIntoDefaultErrorFile($message);
         }
     }
 
@@ -90,8 +92,14 @@ class FileLogger
         }
 
         if (!$result) {
-            error_log("Failed to write to log file: $filename", 3, $this->errorFilePath);
+            $message = "Failed to write to log file: $filename";
+            $this->writeIntoDefaultErrorFile($message);
         }
         
+    }
+
+    private function writeIntoDefaultErrorFile(string $message)
+    {
+        error_log($message, 3, $this->errorFilePath);
     }
 }
